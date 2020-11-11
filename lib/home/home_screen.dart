@@ -26,6 +26,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final controller = Get.put(HomeController());
+  int countToday = 0;
+  int countSchedule = 0;
 
   Widget test() {
     return Column(
@@ -42,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: SectionCalender(
                         imgPath: "assets/calendar.png",
                         title: "Today",
-                        count: 1,
+                        count: controller.countToday.value,
                         color: Colors.blue))),
             SizedBox(width: 20),
             Flexible(
@@ -50,14 +52,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: SectionCalender(
                     imgPath: "assets/clock.png",
                     title: "Scheduled",
-                    count: 2,
+                    count: countSchedule,
                     color: Colors.amberAccent))
           ],
         ),
         SizedBox(height: 20),
         SectionAllCalendar(title: "All", count: 1),
         SizedBox(height: 30),
-        SectionMyListCalendar()
+        SectionMyListCalendar(calendars: controller.calendars.value,)
       ],
     );
   }
@@ -97,7 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.black87,
           appBar: _.focusNode.hasFocus ? null : appBar(),
           floatingActionButton: GestureDetector(
-              onTap: () => Get.bottomSheet(CreateListScreen(), isScrollControlled: true),
+              onTap: () =>
+                  Get.bottomSheet(CreateListScreen(), isScrollControlled: true,ignoreSafeArea: false),
               child: Text("Add list",
                   style: TextStyle(color: Colors.blue, fontSize: 18))),
           body: GestureDetector(

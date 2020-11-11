@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 
-import '../models/schedule_model.dart';
+import '../create_schedule/models/schedule_model.dart';
 
 class DBHelper {
   static Database _db;
@@ -18,7 +18,7 @@ class DBHelper {
         version: _version,
         onCreate: (db, version) {
           return db.execute(
-            "CREATE TABLE $_tableName(id INTEGER PRIMARY KEY,isScheduled int , title STRING,momentOfReminding STRING,focusNode STRING,dateTime STRING, note TEXT)",
+            "CREATE TABLE $_tableName(id INTEGER PRIMARY KEY,isScheduled INTEGER,title STRING,momentOfReminding STRING,focusNode STRING,dateTime STRING, note TEXT)",
           );
         },
       );
@@ -36,7 +36,7 @@ class DBHelper {
   }
 
   static Future<int> update(ScheduleModel scheduleModel) async {
-    return await _db.update(_tableName,scheduleModel.toJson(),where: 'id = ?',whereArgs: [scheduleModel.title]);
+    return await _db.update(_tableName,scheduleModel.toJson(),where: 'id = ?',whereArgs: [scheduleModel.id]);
   }
 
 

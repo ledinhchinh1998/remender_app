@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:remender_new/create_schedule/create_schedule_binding.dart';
+import 'package:remender_new/create_schedule/create_schedule_screen.dart';
 import 'package:remender_new/home/model/calendar_model.dart';
+import 'package:remender_new/home/model/list_model.dart';
 import '../home_screen.dart';
 
 class SectionMyListCalendar extends StatelessWidget {
 
-  final List<CalendarModel> calendars;
+  final List<ListModel> calendars;
 
   SectionMyListCalendar({this.calendars});
 
@@ -25,7 +29,7 @@ class SectionMyListCalendar extends StatelessWidget {
           child: ListView.separated (
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
-              itemCount: 10,
+              itemCount: calendars.length,
               separatorBuilder: (BuildContext context, int index) {
                 return Divider(
                   height: 1,
@@ -33,8 +37,12 @@ class SectionMyListCalendar extends StatelessWidget {
                 );
               },
               itemBuilder: (BuildContext context, int index) {
-                return ItemCalendar(colorIcon: Colors.white, title: "Lunch", count: 1);
-              },
+                var item = calendars[index];
+                var arr = item.color.split(':')[1].split('(0x')[1].split(')')[0];
+                int value = int.parse(arr, radix: 16);
+                Color otherColor = new Color(value);
+                return ItemCalendar(colorIcon: otherColor, title: item.title, count: 1);
+              }
           ),
         )
       ],
@@ -51,53 +59,56 @@ class ItemCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(bottom: 10, top: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(25)
-                ),
-                child: Icon(
-                  Icons.list,
-                  color: colorIcon,
-                  size: 25,
-                ),
-              ),
-              SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(
+    return InkWell(
+      onTap: () =>  Get.to(CreateScheduleScreen(title:  title,),binding: CreateScheduleBinding()),
+      child: Container(
+        padding: EdgeInsets.only(bottom: 10, top: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: colorIcon,
+                    borderRadius: BorderRadius.circular(25)
+                  ),
+                  child: Icon(
+                    Icons.list,
                     color: Colors.white,
-                    fontSize: 20
+                    size: 25,
+                  ),
                 ),
-              )
-            ],
-          ),
-          Row(
-            children: [
-              Text(
-                count.toString(),
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 18
+                SizedBox(width: 10),
+                Text(
+                  title,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  '',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 18
+                  ),
                 ),
-              ),
-              SizedBox(width: 5),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 15,
-                color: Colors.grey,
-              )
-            ],
-          )
-        ],
+                SizedBox(width: 5),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 15,
+                  color: Colors.grey,
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

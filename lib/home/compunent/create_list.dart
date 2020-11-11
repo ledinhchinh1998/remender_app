@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:remender_new/home/home_controller.dart';
 import 'package:remender_new/home/model/list_model.dart';
 
 class CreateListScreen extends StatefulWidget {
@@ -18,14 +20,26 @@ class _CreateListScreenState extends State<CreateListScreen> {
     Colors.brown
   ];
 
-  String title = "";
+  HomeController controller = Get.find();
+  var textEditingController = TextEditingController();
 
   Color borderColor = Colors.black26;
 
   void doneAction() {
-    ListModel listModel = ListModel(title: title, color: colorBg.toString(), count: 0);
+    var item = ListModel();
+    if (textEditingController.text.isNotEmpty) {
+      item.title = textEditingController.text;
+      item.color = colorBg.toString();
+      controller.calendars.value.add(item);
+      controller.addNote(item);
+      controller.update();
+      Get.back();
+    } else {
+      Get.snackbar('Error', 'Text input is empty!',
+          snackPosition: SnackPosition.BOTTOM, colorText: Colors.red);
+    }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,23 +48,20 @@ class _CreateListScreenState extends State<CreateListScreen> {
         backgroundColor: Colors.black87,
         automaticallyImplyLeading: false,
         title: Text(
-          "New list",style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 18
-        ),
+          "New list",
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
         actions: [
           FlatButton(
-            onPressed: () {},
+            onPressed: doneAction,
             child: Text(
               "Done",
               style: TextStyle(
-                color: Colors.blue,
-                fontSize: 18,
-                fontWeight: FontWeight.bold
-              ),
+                  color: Colors.blue,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
             ),
           )
         ],
@@ -64,9 +75,7 @@ class _CreateListScreenState extends State<CreateListScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: colorBg,
-                  borderRadius: BorderRadius.circular(60)
-                ),
+                    color: colorBg, borderRadius: BorderRadius.circular(60)),
                 padding: EdgeInsets.all(15),
                 child: Icon(
                   Icons.list,
@@ -78,44 +87,38 @@ class _CreateListScreenState extends State<CreateListScreen> {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(10)
-                ),
+                    color: Colors.grey[800],
+                    borderRadius: BorderRadius.circular(10)),
                 child: TextField(
-                  onChanged: (value) {
-                    title = value;
-                  },
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20
-                  ),
-                  decoration: InputDecoration(
-                  )
-                ),
+                    textAlign: TextAlign.center,
+                    controller: textEditingController,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                    decoration: InputDecoration(border: InputBorder.none)),
               ),
               SizedBox(height: 20),
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                children: listColor.map((item) => GestureDetector(
-                  onTap: () {
-                    print(item.toString());
-                    colorBg = item;
-                    setState(() {
-
-                    });
-                  },
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        color: item,
-                        border: Border.all(color: borderColor),
-                        borderRadius: BorderRadius.circular(25)
-                    ),
-                  ),
-                )).toList().cast<Widget>(),
+                children: listColor
+                    .map((item) => GestureDetector(
+                          onTap: () {
+                            colorBg = item;
+                            setState(() {});
+                          },
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: item,
+                                border: Border.all(color: borderColor),
+                                borderRadius: BorderRadius.circular(25)),
+                          ),
+                        ))
+                    .toList()
+                    .cast<Widget>(),
               ),
             ],
           ),

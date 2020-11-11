@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import 'component/detail_schedule.dart';
-import 'helper/db_helper.dart';
+import '../helper/db_helper.dart';
 import 'models/schedule_model.dart';
 import 'models/schedule_model.dart';
 import 'models/schedule_model.dart';
@@ -46,13 +46,23 @@ class CreateScheduleController extends GetxController {
     super.onInit();
   }
 
+  int result(){
+    int count = 0;
+    listSchedule.value.forEach((element) {
+      if (element.isScheduled == 0) {
+        count ++;
+      }
+    });
+    return count;
+  }
+
   void addSchedule() {
     ScheduleModel schedule = ScheduleModel(
         isScheduled: 0,
         title: currentTitleItem ?? "",
         dateTime: DateTime.now().toString(),
         note: '',
-        focusNode: FocusNode());
+        focusNode: null);
     listSchedule.value.add(schedule);
     update();
   }
@@ -69,7 +79,7 @@ class CreateScheduleController extends GetxController {
 
   void getNotes() async {
     List<Map<String, dynamic>> noteList = await DBHelper.query();
-    listSchedule.value = noteList.map((data) => new ScheduleModel.fromJson(data)).toList();
+    listSchedule.value = noteList.map((data) => ScheduleModel.fromJson(data)).toList();
   }
 
   void checkScheduleEmpty() {

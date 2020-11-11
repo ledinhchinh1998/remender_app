@@ -7,6 +7,10 @@ import 'create_schedule_controller.dart';
 
 class CreateScheduleScreen extends GetView<CreateScheduleController> {
 
+  final String title;
+
+  CreateScheduleScreen({this.title});
+
   Widget rightButtonBar() {
     return FlatButton(
       onPressed: () {
@@ -30,6 +34,8 @@ class CreateScheduleScreen extends GetView<CreateScheduleController> {
         return Scaffold(
           backgroundColor: Colors.black87,
           appBar: AppBar(
+            title: Text(title ?? '',style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold,fontSize: 18),),
+              centerTitle: true,
               leadingWidth: 100,
               backgroundColor: Colors.black87,
               automaticallyImplyLeading: false,
@@ -38,7 +44,7 @@ class CreateScheduleScreen extends GetView<CreateScheduleController> {
               ],
               leading: GestureDetector(
                 onTap: () {
-                  Get.back();
+                  Get.back(result: controller.result());
                 },
                 child: Container(
                   padding: EdgeInsets.only(left: 10),
@@ -101,11 +107,12 @@ class CreateScheduleScreen extends GetView<CreateScheduleController> {
                   return ScheduleItem(
                       isChecked: schedule.isScheduled,
                       title: schedule.title,
+                      note: schedule.note,
                       momentSchedule: schedule.dateTime,
                       focusNode: schedule.focusNode,
                       onchange: (value) => _.onchangeTextTitle(value),
                       onPressedInfo: () => _.onPressedInfo(index),
-                      onChangeStick: (value){
+                      onChangeStick: (){
                         controller.setCheckBox(schedule);
                       },
                   );

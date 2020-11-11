@@ -20,6 +20,8 @@ class DetailScheduleScreen extends StatefulWidget {
 class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
   DateTime dateTime = DateTime.now();
   CreateScheduleController controller = Get.find();
+  var titleController = TextEditingController();
+  var noteController = TextEditingController();
 
   void _showDemoPicker({
     @required BuildContext context,
@@ -35,6 +37,14 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
       context: context,
       builder: (context) => dialogBody,
     );
+  }
+
+
+  @override
+  void initState() {
+    titleController.text = controller.listSchedule.value[widget.index].title;
+    noteController.text = controller.listSchedule.value[widget.index].note ?? "";
+    super.initState();
   }
 
   Widget _buildDateAndTimePicker(BuildContext context) {
@@ -84,6 +94,19 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
             Stack(
               children: [
                 Align(
+                    alignment: Alignment.centerLeft,
+                    child: FlatButton(
+                        onPressed: (){
+                          controller.deleteNote(controller.listSchedule.value[widget.index]);
+                          Get.back();
+                        },
+                        child: Text("Delete", style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 18
+                        ))
+                    )
+                ),
+                Align(
                   alignment: Alignment.center,
                   child: FlatButton(
                       onPressed: null,
@@ -97,7 +120,11 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
                   alignment: Alignment.centerRight,
                     child: FlatButton(
                       onPressed: () {
-                        controller.update();
+                        var note = controller.listSchedule.value[widget.index];
+                        note.title = titleController.text;
+                        note.note = noteController.text;
+                        note.dateTime = dateTime.toString();
+                        controller.updateNotes(note);
                         Get.back();
                       },
                       child: Text("Done", style: TextStyle(
@@ -117,9 +144,7 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
             Container(
               padding: EdgeInsets.only(left: 20, right: 20),
               child: TextField(
-                controller: TextEditingController(
-                  text: controller.listSchedule.value[widget.index].title
-                ),
+                controller: titleController,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18
@@ -135,9 +160,7 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
             Container(
               padding: EdgeInsets.only(left: 20, right: 20),
               child: TextField(
-                controller: TextEditingController(
-                  text: controller.listSchedule[widget.index].note
-                ),
+                controller: noteController,
                 onChanged: (value) {
                   controller.listSchedule[widget.index].note = value;
                 },

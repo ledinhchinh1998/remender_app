@@ -30,14 +30,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     });
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              HexColor.fromHex('#2193b0'),
-              HexColor.fromHex('#6dd5ed')
-            ]
-          )
-        ),
+        color: Colors.black,
         child: GetBuilder<SplashController>(
           init: SplashController(),
           builder: (_){
