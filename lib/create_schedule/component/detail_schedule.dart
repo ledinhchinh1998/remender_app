@@ -49,7 +49,7 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
               mode: CupertinoDatePickerMode.dateAndTime,
               initialDateTime: dateTime,
               onDateTimeChanged: (newDateTime) {
-                controller.listSchedule[widget.index].dateTime = newDateTime;
+                controller.listSchedule[widget.index].dateTime = newDateTime.toString();
                 print(controller.listSchedule[widget.index].dateTime);
                 setState(() => dateTime = newDateTime);
               },

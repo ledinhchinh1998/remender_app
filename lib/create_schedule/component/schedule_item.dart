@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:circular_check_box/circular_check_box.dart';
 
 class ScheduleItem extends StatelessWidget {
-  bool isChecked;
-  String title;
-  String momentSchedule;
-  FocusNode focusNode;
-  Function(String value) onchange;
-  Function(String value) onSubmitted;
-  Function onPressedInfo;
+  final int isChecked;
+  final String title;
+  final String momentSchedule;
+  final FocusNode focusNode;
+  final Function(String value) onchange;
+  final Function(String value) onSubmitted;
+  final Function(bool onChange) onChangeStick;
+  final Function onPressedInfo;
 
-  ScheduleItem({this.isChecked, this.title, this.momentSchedule, this.focusNode, this.onchange, this.onSubmitted, this.onPressedInfo});
+
+  ScheduleItem({this.isChecked, this.title, this.momentSchedule, this.focusNode, this.onchange, this.onSubmitted, this.onPressedInfo, this.onChangeStick});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +21,13 @@ class ScheduleItem extends StatelessWidget {
       child: Row(
         children: [
           CircularCheckBox(
-            value: true,
+            disabledColor: Colors.red,
+            inactiveColor: Colors.white,
+            value: isChecked == 0 ? false : true,
             materialTapTargetSize: MaterialTapTargetSize.padded,
-            onChanged: (bool) {
-
+            onChanged: (value) {
+              print(value);
+              onChangeStick(value);
             },
           ),
           Column(
@@ -30,6 +35,9 @@ class ScheduleItem extends StatelessWidget {
               Container(
                 width: MediaQuery.of(context).size.width - 145,
                 child: TextField(
+                  controller: TextEditingController(
+                    text: title
+                  ),
                   focusNode: focusNode,
                   enableInteractiveSelection: false,
                   decoration: InputDecoration(

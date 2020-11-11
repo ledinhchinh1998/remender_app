@@ -87,21 +87,33 @@ class CreateScheduleScreen extends GetView<CreateScheduleController> {
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-          body: _.listSchedule.value.length == 0 ? Container() : GestureDetector(
-            onTap: () {
-              controller.checkScheduleEmpty();
-              controller.isAddSchedule.value = false;
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: ListView.builder(
-              padding: EdgeInsets.all(20),
-              itemBuilder: (context, index) {
-                var schedule = _.listSchedule[index];
-                return ScheduleItem(isChecked: schedule.isScheduled, title: schedule.title, momentSchedule: DateFormat.yMMMd().add_jm().format(schedule.dateTime), focusNode: schedule.focusNode, onchange: (value) => _.onchangeTextTitle(value), onPressedInfo: () => _.onPressedInfo(index));
+          body: Obx((){
+          return  controller.listSchedule.value.length == 0 ? Container() : GestureDetector(
+              onTap: () {
+                controller.checkScheduleEmpty();
+                controller.isAddSchedule.value = false;
+                FocusScope.of(context).requestFocus(FocusNode());
               },
-              itemCount: _.listSchedule.value.length,
-            ),
-          ),
+              child: ListView.builder(
+                padding: EdgeInsets.all(20),
+                itemBuilder: (context, index) {
+                  var schedule = controller.listSchedule[index];
+                  return ScheduleItem(
+                      isChecked: schedule.isScheduled,
+                      title: schedule.title,
+                      momentSchedule: schedule.dateTime,
+                      focusNode: schedule.focusNode,
+                      onchange: (value) => _.onchangeTextTitle(value),
+                      onPressedInfo: () => _.onPressedInfo(index),
+                      onChangeStick: (value){
+                        controller.setCheckBox(schedule);
+                      },
+                  );
+                },
+                itemCount: controller.listSchedule.value.length,
+              ),
+            );
+          }),
         );
       },
     );
