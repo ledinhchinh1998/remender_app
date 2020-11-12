@@ -34,6 +34,7 @@ dependencies:
   google_fonts: ^1.1.1
   circular_check_box: ^1.0.4
   shared_preferences: ^0.5.12+4
+  flutter_slidable:
 
 dev_dependencies:
   flutter_test:

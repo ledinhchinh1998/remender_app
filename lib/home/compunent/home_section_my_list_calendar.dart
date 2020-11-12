@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:remender_new/create_schedule/create_schedule_binding.dart';
 import 'package:remender_new/create_schedule/create_schedule_screen.dart';
+import 'package:remender_new/home/home_controller.dart';
 import 'package:remender_new/home/model/calendar_model.dart';
 import 'package:remender_new/home/model/list_model.dart';
 import '../home_screen.dart';
 
 class SectionMyListCalendar extends StatelessWidget {
-
   final List<ListModel> calendars;
 
   SectionMyListCalendar({this.calendars});
+
+  final HomeController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class SectionMyListCalendar extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(10),
           decoration: decorationContainer,
-          child: ListView.separated (
+          child: ListView.separated(
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               itemCount: calendars.length,
@@ -38,12 +41,13 @@ class SectionMyListCalendar extends StatelessWidget {
               },
               itemBuilder: (BuildContext context, int index) {
                 var item = calendars[index];
-                var arr = item.color.split(':')[1].split('(0x')[1].split(')')[0];
+                var arr =
+                    item.color.split(':')[1].split('(0x')[1].split(')')[0];
                 int value = int.parse(arr, radix: 16);
                 Color otherColor = new Color(value);
-                return ItemCalendar(colorIcon: otherColor, title: item.title, count: 1);
-              }
-          ),
+                return ItemCalendar(
+                    colorIcon: otherColor, title: item.title, count: 1);
+              }),
         )
       ],
     );
@@ -54,62 +58,78 @@ class ItemCalendar extends StatelessWidget {
   final Color colorIcon;
   final String title;
   final int count;
+  final Function deleteNote;
 
-  ItemCalendar({this.colorIcon, this.title, this.count});
+  ItemCalendar({this.colorIcon, this.title, this.count, this.deleteNote});
 
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () =>  Get.to(CreateScheduleScreen(title:  title,),binding: CreateScheduleBinding()),
+  Widget myListNote() {
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      actionExtentRatio: 0.25,
       child: Container(
-        padding: EdgeInsets.only(bottom: 10, top: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+        child: InkWell(
+          onTap: () => Get.to(
+              CreateScheduleScreen(
+                title: title,
+              ),
+              binding: CreateScheduleBinding()),
+          child: Container(
+            padding: EdgeInsets.only(bottom: 10, top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: colorIcon,
-                    borderRadius: BorderRadius.circular(25)
-                  ),
-                  child: Icon(
-                    Icons.list,
-                    color: Colors.white,
-                    size: 25,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: colorIcon,
+                          borderRadius: BorderRadius.circular(25)),
+                      child: Icon(
+                        Icons.list,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      title,
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    )
+                  ],
                 ),
-                SizedBox(width: 10),
-                Text(
-                  title,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      '',
+                      style: TextStyle(color: Colors.grey, fontSize: 18),
+                    ),
+                    SizedBox(width: 5),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 15,
+                      color: Colors.grey,
+                    )
+                  ],
                 )
               ],
             ),
-            Row(
-              children: [
-                Text(
-                  '',
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 18
-                  ),
-                ),
-                SizedBox(width: 5),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 15,
-                  color: Colors.grey,
-                )
-              ],
-            )
-          ],
+          ),
         ),
       ),
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: 'Delete',
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: deleteNote,
+        ),
+      ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return myListNote();
   }
 }
