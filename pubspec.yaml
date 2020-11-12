@@ -35,6 +35,8 @@ dependencies:
   circular_check_box: ^1.0.4
   shared_preferences: ^0.5.12+4
   flutter_slidable:
+  flutter_local_notifications:
+  rxdart: ^0.24.1
 
 dev_dependencies:
   flutter_test:

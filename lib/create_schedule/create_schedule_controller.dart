@@ -1,17 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 import 'component/detail_schedule.dart';
 import '../helper/db_helper.dart';
 import 'models/schedule_model.dart';
-import 'models/schedule_model.dart';
-import 'models/schedule_model.dart';
-import 'models/schedule_model.dart';
-import 'models/schedule_model.dart';
-import 'models/schedule_model.dart';
+
+
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+
+import '../main.dart';
 
 class CreateScheduleController extends GetxController {
   var isAddSchedule = false.obs;
@@ -22,15 +25,11 @@ class CreateScheduleController extends GetxController {
   var isCheckBox = false.obs;
 
   void setCheckBox(ScheduleModel scheduleModel){
-
-    print('alooooo  =  ${scheduleModel.toJson()}');
-
     if (scheduleModel.isScheduled == 0) {
       scheduleModel.isScheduled = 1;
     }  else {
       scheduleModel.isScheduled = 0;
     }
-
     updateNotes(scheduleModel);
   }
 
@@ -41,8 +40,8 @@ class CreateScheduleController extends GetxController {
   }
 
   @override
-  void onInit() {
-    // TODO: implement onInit
+  void onInit() async {
+    await _configureLocalTimeZone();
     super.onInit();
   }
 
@@ -120,10 +119,40 @@ class CreateScheduleController extends GetxController {
     Get.bottomSheet(DetailScheduleScreen(index: index));
   }
 
-  @override
-  void onClose() {
-    // TODO: implement onClose
-    super.onClose();
-    print("vao day");
+  // push notification
+
+  Future<void> zonedScheduleNotification({int year, int month,int day,int hour,int minute,String title,String body,}) async {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        title,
+        body,
+        _nextInstanceOfTenAM(year: year,month: month,day: day,hour: hour,minute: minute),
+        const NotificationDetails(
+            android: AndroidNotificationDetails('your channel id',
+                'your channel name', 'your channel description')),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime);
   }
+  tz.TZDateTime _nextInstanceOfTenAM({int year, int month,int day,int hour,int minute}) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate =
+    tz.TZDateTime(tz.local, year,month, day, hour,minute);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
+  Future<void> _configureLocalTimeZone() async {
+    tz.initializeTimeZones();
+    final timeZoneName = await platform.invokeMethod('getTimeZoneName');
+    print(timeZoneName);
+    tz.setLocalLocation(tz.getLocation(timeZoneName.toString()));
+  }
+
+  Future<void> cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
 }

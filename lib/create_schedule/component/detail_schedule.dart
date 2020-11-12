@@ -7,9 +7,7 @@ import '../create_schedule_controller.dart';
 import 'list_schedule.dart';
 
 class DetailScheduleScreen extends StatefulWidget {
-
   final int index;
-
 
   DetailScheduleScreen({this.index});
 
@@ -22,6 +20,8 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
   CreateScheduleController controller = Get.find();
   var titleController = TextEditingController();
   var noteController = TextEditingController();
+  var isShow = false;
+  Duration counterTime;
 
   void _showDemoPicker({
     @required BuildContext context,
@@ -39,11 +39,11 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
     );
   }
 
-
   @override
   void initState() {
     titleController.text = controller.listSchedule.value[widget.index].title;
-    noteController.text = controller.listSchedule.value[widget.index].note ?? "";
+    noteController.text =
+        controller.listSchedule.value[widget.index].note ?? "";
     super.initState();
   }
 
@@ -55,12 +55,13 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
           child: _BottomPicker(
             child: CupertinoDatePicker(
               backgroundColor:
-              CupertinoColors.systemBackground.resolveFrom(context),
+                  CupertinoColors.systemBackground.resolveFrom(context),
               mode: CupertinoDatePickerMode.dateAndTime,
               initialDateTime: dateTime,
               onDateTimeChanged: (newDateTime) {
-                controller.listSchedule[widget.index].dateTime = newDateTime.toString();
-                print(controller.listSchedule[widget.index].dateTime);
+                controller.listSchedule[widget.index].dateTime =
+                    newDateTime.toString();
+                print('time counter ${counterTime}');
                 setState(() => dateTime = newDateTime);
               },
             ),
@@ -86,7 +87,8 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(15), topRight: Radius.circular(15)),
           color: Colors.grey[800],
         ),
         child: Column(
@@ -96,43 +98,36 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
                 Align(
                     alignment: Alignment.centerLeft,
                     child: FlatButton(
-                        onPressed: (){
-                          controller.deleteNote(controller.listSchedule.value[widget.index]);
+                        onPressed: () {
+                          controller.deleteNote(
+                              controller.listSchedule.value[widget.index]);
                           Get.back();
                         },
-                        child: Text("Delete", style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 18
-                        ))
-                    )
-                ),
+                        child: Text("Delete",
+                            style:
+                                TextStyle(color: Colors.red, fontSize: 18)))),
                 Align(
-                  alignment: Alignment.center,
-                  child: FlatButton(
-                      onPressed: null,
-                      child: Text("Detail", style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18
-                      ))
-                  )
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
+                    alignment: Alignment.center,
                     child: FlatButton(
-                      onPressed: () {
-                        var note = controller.listSchedule.value[widget.index];
-                        note.title = titleController.text;
-                        note.note = noteController.text;
-                        note.dateTime = dateTime.toString();
-                        controller.updateNotes(note);
-                        Get.back();
-                      },
-                      child: Text("Done", style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 18
-                    ))
-                    )
-                )
+                        onPressed: null,
+                        child: Text("Detail",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 18)))),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: FlatButton(
+                        onPressed: () {
+                          var note =
+                              controller.listSchedule.value[widget.index];
+                          note.title = titleController.text;
+                          note.note = noteController.text;
+                          note.dateTime = dateTime.toString();
+                          controller.updateNotes(note);
+                          Get.back();
+                        },
+                        child: Text("Done",
+                            style:
+                                TextStyle(color: Colors.blue, fontSize: 18))))
               ],
             ),
             SizedBox(
@@ -145,16 +140,10 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
               padding: EdgeInsets.only(left: 20, right: 20),
               child: TextField(
                 controller: titleController,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 18),
                 decoration: InputDecoration(
-                  hintText: "Title",
-                    hintStyle: TextStyle(
-                      color: CupertinoColors.inactiveGray
-                    )
-                ),
+                    hintText: "Title",
+                    hintStyle: TextStyle(color: CupertinoColors.inactiveGray)),
               ),
             ),
             Container(
@@ -164,16 +153,43 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
                 onChanged: (value) {
                   controller.listSchedule[widget.index].note = value;
                 },
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 18),
                 decoration: InputDecoration(
-                  hintText: "Note",
-                  hintStyle: TextStyle(
-                      color: CupertinoColors.inactiveGray
+                    hintText: "Note",
+                    hintStyle: TextStyle(color: CupertinoColors.inactiveGray)),
+              ),
+            ),
+            Container(
+              padding:
+                  EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Notification",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  Switch.adaptive(
+                    value: isShow,
+                    onChanged: (value) async {
+                      isShow = !isShow;
+                      if (isShow) {
+                        await controller.zonedScheduleNotification(
+                            year: dateTime.year,
+                            month: dateTime.month,
+                            day: dateTime.day,
+                            hour: dateTime.hour,
+                            minute: dateTime.minute,
+                            title: 'Công việc của bạn',
+                            body: controller
+                                .listSchedule.value[widget.index].title);
+                      }else{
+                        await controller.cancelAllNotifications();
+                      }
+                      setState(() {});
+                    },
                   )
-                ),
+                ],
               ),
             ),
             SizedBox(
@@ -191,13 +207,10 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
                     flex: 1,
                     child: Text(
                       "Reminds me on",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ),
-                  Flexible(flex: 1 ,child: _buildDateAndTimePicker(context))
+                  Flexible(flex: 1, child: _buildDateAndTimePicker(context))
                 ],
               ),
             ),
@@ -213,16 +226,14 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
                 Get.bottomSheet(RepeatScreen());
               },
               child: Container(
-                padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                padding:
+                    EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       "Repeat",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                     Row(
                       children: [
@@ -230,13 +241,10 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
                           "Not",
                           style: TextStyle(
                               color: CupertinoColors.inactiveGray,
-                              fontSize: 18
-                          ),
+                              fontSize: 18),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: CupertinoColors.inactiveGray
-                        )
+                        Icon(Icons.arrow_forward_ios,
+                            color: CupertinoColors.inactiveGray)
                       ],
                     )
                   ],
@@ -255,23 +263,19 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
                 Get.bottomSheet(ChangeList());
               },
               child: Container(
-                padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                padding:
+                    EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       "List",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                     Row(
                       children: [
-                        Icon(
-                            Icons.arrow_forward_ios,
-                            color: CupertinoColors.inactiveGray
-                        )
+                        Icon(Icons.arrow_forward_ios,
+                            color: CupertinoColors.inactiveGray)
                       ],
                     )
                   ],

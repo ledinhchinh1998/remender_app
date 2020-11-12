@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:remender_new/create_schedule/create_schedule_binding.dart';
 import 'package:remender_new/create_schedule/create_schedule_screen.dart';
@@ -6,6 +7,10 @@ import 'package:remender_new/helper/my_list_helper.dart';
 import 'package:remender_new/home/model/list_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+import '../main.dart';
 import 'model/calendar_model.dart';
 
 class HomeController extends GetxController {
@@ -18,6 +23,7 @@ class HomeController extends GetxController {
   var countToday = 0.obs;
   var countSchedule = 0.obs;
   SharedPreferences prefs;
+
 
   @override
   void onInit() async {
@@ -72,6 +78,11 @@ class HomeController extends GetxController {
 
   Future<void> addNote(ListModel listModel) async {
     await MLDBHelper.insert(listModel);
+  }
+
+  Future<void> deleteNote(ListModel listModel) async {
+    await MLDBHelper.delete(listModel);
+    getMyList();
   }
 
 
