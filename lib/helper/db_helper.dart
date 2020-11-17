@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
 import '../create_schedule/models/schedule_model.dart';
+import 'package:path/path.dart' as p;
 
 class DBHelper {
   static Database _db;
@@ -12,9 +13,10 @@ class DBHelper {
       return;
     }
     try {
-      String _path = await getDatabasesPath() + 'note.db';
+      String _path = await getDatabasesPath();
+      String path = p.join(_path,'note.db');
       _db = await openDatabase(
-        _path,
+        path,
         version: _version,
         onCreate: (db, version) {
           return db.execute(

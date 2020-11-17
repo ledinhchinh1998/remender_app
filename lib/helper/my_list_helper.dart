@@ -1,19 +1,21 @@
 import 'package:remender_new/home/model/list_model.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart' as p;
 
 class MLDBHelper {
   static Database _db;
   static final int _version = 1;
-  static final String _tableName = 'mylist';
+  static final String _tableName = '_listDB';
 
   static Future<void> initDb() async {
     if (_db != null) {
       return;
     }
     try {
-      String _path = await getDatabasesPath() + 'mylist.db';
+      String path = await getDatabasesPath();
+      String path1 = p.join(path,'_listDB.db');
       _db = await openDatabase(
-        _path,
+        path1,
         version: _version,
         onCreate: (db, version) {
           return db.execute(
