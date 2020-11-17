@@ -180,7 +180,7 @@ class _DetailScheduleScreenState extends State<DetailScheduleScreen> {
                             day: dateTime.day,
                             hour: dateTime.hour,
                             minute: dateTime.minute,
-                            title: 'Công việc của bạn',
+                            title: 'Công việc của bạn ',
                             body: controller
                                 .listSchedule.value[widget.index].title);
                       }else{
